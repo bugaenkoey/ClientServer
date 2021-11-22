@@ -16,37 +16,47 @@ namespace ClientServer
             string text;
             IPAddress ip = IPAddress.Parse(myIp);
             IPEndPoint endPoint = new IPEndPoint(ip, port);
-            Socket MySoket = new Socket(AddressFamily.InterNetwork,
-            SocketType.Stream, ProtocolType.IP);
-
-            try
+            Socket MySoket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            string str = string.Empty;
+            while (true)
             {
-                MySoket.Connect(endPoint);
-                Console.WriteLine("Client start " + myIp + ":" + port);
-                if (MySoket.Connected)
+                try
                 {
-                    string strSend = "GET\r\n\r\n";
-                    MySoket.Send(System.Text.Encoding.ASCII.GetBytes(strSend));
-                    byte[] buffer = new byte[1024];
-                    int l;
-                    do
+                    MySoket.Connect(endPoint);
+                    Console.WriteLine("Client start " + myIp + ":" + port);
+                    if (MySoket.Connected)
                     {
-                        l = MySoket.Receive(buffer);
-                        text = System.Text.Encoding.ASCII.
-                        GetString(buffer, 0, l);
-                    } while (l > 0);
+                        byte[] buffer = new byte[1024];
+                        int i;
+                        do
+                        {
+                            str = Console.ReadLine();
+                            MySoket.Send(System.Text.Encoding.ASCII.GetBytes(str));
+                            i = MySoket.Receive(buffer);
+                            Console.WriteLine(i);
+                            text = System.Text.Encoding.ASCII.GetString(buffer, 0, i);
+                            //text = System.Text.Encoding.ASCII.GetString(buffer);
+                            Console.WriteLine($"Polucheno ot servera {text} ");
+                        } while (i > 0);
+                        if (str == ".")
+                        {
+                            Console.WriteLine($"str=={str} text=={text}");
+                        }
+                        MySoket.Shutdown(SocketShutdown.Both);
+                        MySoket.Close();
+                    }
+                    else
+                        Console.WriteLine("Error");
                 }
-                else
-                    Console.WriteLine("Error");
-            }
-            catch (SocketException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            finally
-            {
-                MySoket.Shutdown(SocketShutdown.Both);
-                MySoket.Close();
+                catch (SocketException ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally
+                {
+                    MySoket.Shutdown(SocketShutdown.Both);
+                    MySoket.Close();
+                }
             }
         }
     }

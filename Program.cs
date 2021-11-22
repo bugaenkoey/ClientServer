@@ -7,6 +7,7 @@ namespace ClientServer
         static void Main(string[] args)
         {
             string MyIp = "127.0.0.1";
+           // string MyIp2 = "127.0.0.2";
             int port = 1024;
             string inSelect = "";
             while (inSelect != "x") {
