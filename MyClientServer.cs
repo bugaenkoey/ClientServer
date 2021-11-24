@@ -6,7 +6,7 @@ namespace ClientServer
 {
     internal class MyClientServer
     {
-        string[] message =
+       public string[] messages =
                  {
             "mne nravitsa s toboy obshatsa",
             "ja hochu tebe skazat'",
@@ -20,40 +20,38 @@ namespace ClientServer
             "Bye",
 
         };
-        // private string myIp;
-        // private int port;
-        // private bool v1;
-        private bool avto;
-        Socket socket;
-        byte[] buffer = new byte[1024];
-        IPEndPoint endPoint;
+        private Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+        // Статическое свойство Loopback: возвращает объект IPAddress для адреса 127.0.0.1.
+        // IPAddress ip = IPAddress.Loopback;
+        private IPEndPoint endPoint = new IPEndPoint(IPAddress.Loopback, 1024);
+        private byte[] buffer = new byte[1024];
+        public bool avto = true;
 
-        public MyClientServer(string myIp, int port, bool serer, bool avto)
+        public MyClientServer(string myIp, int port, bool avto)
         {
-            // this.myIp = myIp;
-            // this.port = port;
-            // this.v1 = serer;
+            settings(myIp, port, avto);
+        }
+
+        public MyClientServer()
+        {
+        }
+
+        public void settings(string myIp, int port, bool avto)
+        {
+            endPoint = new IPEndPoint(IPAddress.Parse(myIp), port);
             this.avto = avto;
-            this.socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
-            IPAddress ip = IPAddress.Parse(myIp);
-            //Статическое свойство Loopback: возвращает объект IPAddress для адреса 127.0.0.1.
-            // IPAddress ip = IPAddress.Loopback;
-            this.endPoint = new IPEndPoint(ip, port);
-            if (serer)
-            {
-                socket.Bind(endPoint);
-                socket.Listen(10);
-            }
         }
 
         public void StartServer()
         {
+            socket.Bind(endPoint);
+            socket.Listen(10);
+
             try
             {
-
-                string message = "Hi it is SERVER!";
-
-                socket = this.socket.Accept();
+                string message = $"Hi, it is SERVER! {endPoint.Address} : {endPoint.Port}";
+                Console.WriteLine($"The server is running!!!\nand listening on the port {endPoint.Address} : {endPoint.Port} ");
+                this.socket = socket.Accept();
                 Console.WriteLine(socket.RemoteEndPoint.ToString());
                 socket.Send(System.Text.Encoding.ASCII.GetBytes(message));
                 string he = socket.RemoteEndPoint.ToString();
@@ -66,24 +64,6 @@ namespace ClientServer
             }
         }
 
-        private string getMessage()
-        {
-
-            if (!avto)
-            {
-                return Console.ReadLine();
-
-            }
-            return getRandomMessage();
-        }
-
-        private string getRandomMessage()
-        {
-            Random rnd = new Random();
-            return message[rnd.Next(0, message.Length)];
-
-        }
-
         public void StartClient()
         {
             try
@@ -91,28 +71,24 @@ namespace ClientServer
                 socket.Connect(endPoint);
                 if (socket.Connected)
                 {
-                   string he = "SERVER";
+                    string he = "SERVER";
 
                     Dialog(he);
-
                 }
-
             }
             catch (SocketException ex)
             {
                 Console.WriteLine(ex.Message);
-
             }
-
         }
-        public void Dialog(string he)
-        {
 
-            string stop = "Bye";
+        private void Dialog(string he)
+        {
             int i;
+            string stop = "Bye";
             string text;
             string message;
-           // ConsoleKey key;
+
             do
             {
                 i = socket.Receive(buffer);
@@ -131,17 +107,30 @@ namespace ClientServer
                 Console.WriteLine($"\t{message}");
                 Console.ResetColor();
 
-
-                
-
                 if (message.Contains(stop) || text.Contains(stop))
                 {
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
+                    socket.Dispose();
+                    socket = null;
                     break;
                 }
+            } while (i > 0);
+        }
 
-            } while (i > 0 );
-           // Console.ReadKey().Key != ConsoleKey.Escape
-        //} while (i > 0 || Console.ReadKey(true).Key != ConsoleKey.Escape);
+        private string getMessage()
+        {
+            if (!avto)
+            {
+                return Console.ReadLine();
+            }
+            return getRandomMessage();
+        }
+
+        private string getRandomMessage()
+        {
+            Random rnd = new Random();
+            return messages[rnd.Next(0, messages.Length)];
         }
     }
 }

@@ -6,47 +6,52 @@ namespace ClientServer
     {
         static void Main(string[] args)
         {
-            string MyIp = "127.0.0.1";
-           // string MyIp2 = "127.0.0.2";
-            int port = 1024;
-            string inSelect = "";
-            while (inSelect != "x") {
-                Console.WriteLine("(S)erver) / (C)lient) e(X)it ?");
+            string MyIp = "127.0.0.125";
+            int port = 1025;
+            string inSelect = ""; 
+            MyClientServer myClientServer = new MyClientServer();
+
+            while (inSelect != "x")
+            {
+                Console.WriteLine("create (S)erver) / (C)lient) (X)eit ?");
 
                 inSelect = Console.ReadLine().ToLower();
                 Console.WriteLine(inSelect);
+                if (inSelect == "x") break;
 
-                if (inSelect=="s")
+               // bool avto = avtoOrHand();
+                // MyClientServer myClientServer = new MyClientServer(MyIp, port, avto);
+
+               // myClientServer.settings(MyIp, port, avto);
+                myClientServer.settings(setIp(), setPort(), avtoOrHand());
+
+
+                if (inSelect == "s")
                 {
-                    Console.WriteLine("Server (A)avto (H) hand ?");
-                    inSelect = Console.ReadLine().ToLower();
-                    bool avto = true;
-                    
-                    if (inSelect == "h")
-                    {
-                        avto = false;
-                    }
-
-                    MyClientServer myClientServer =  new MyClientServer(MyIp, port, true, avto);
                     myClientServer.StartServer();
                 }
+
                 if (inSelect == "c")
                 {
-                    Console.WriteLine("Client (A)avto (H) hand ?");
-                    inSelect = Console.ReadLine().ToLower();
-                    bool avto = true;
-
-                    if (inSelect == "h")
-                    {
-                        avto = false;
-                    }
-
-                    MyClientServer myClientServer = new MyClientServer(MyIp, port, false, avto);
                     myClientServer.StartClient();
                 }
-               
-            }
 
+                string setIp()
+                {
+                    Console.WriteLine("write IP adress: ");
+                    return Console.ReadLine().Trim();
+                }
+                int setPort()
+                {
+                    Console.WriteLine("write number port: ");
+                    return int.Parse(Console.ReadLine().Trim());
+                }
+                bool avtoOrHand()
+                {
+                    Console.WriteLine("Dialog (A)avto (H) hand ?");
+                    return Console.ReadLine().ToLower() == "a";
+                }
+            }
         }
     }
 }
