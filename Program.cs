@@ -18,17 +18,31 @@ namespace ClientServer
 
                 if (inSelect=="s")
                 {
-                    Console.WriteLine("Server");
-                    MyClientServer myClientServer =  new MyClientServer(MyIp, port, true, true);
+                    Console.WriteLine("Server (A)avto (H) hand ?");
+                    inSelect = Console.ReadLine().ToLower();
+                    bool avto = true;
+                    
+                    if (inSelect == "h")
+                    {
+                        avto = false;
+                    }
+
+                    MyClientServer myClientServer =  new MyClientServer(MyIp, port, true, avto);
                     myClientServer.StartServer();
-                    //new MyServer(MyIp,port);
                 }
                 if (inSelect == "c")
                 {
-                    Console.WriteLine("Client");
-                    MyClientServer myClientServer = new MyClientServer(MyIp, port, false, true);
+                    Console.WriteLine("Client (A)avto (H) hand ?");
+                    inSelect = Console.ReadLine().ToLower();
+                    bool avto = true;
+
+                    if (inSelect == "h")
+                    {
+                        avto = false;
+                    }
+
+                    MyClientServer myClientServer = new MyClientServer(MyIp, port, false, avto);
                     myClientServer.StartClient();
-                    // new MyClient(MyIp,port);
                 }
                
             }

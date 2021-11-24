@@ -17,7 +17,7 @@ namespace ClientServer
             "ja hotel skapat'",
             "prikol",
             "vse klasno",
-
+            "Bye",
 
         };
         // private string myIp;
@@ -53,13 +53,12 @@ namespace ClientServer
 
                 string message = "Hi it is SERVER!";
 
-                Socket socket = this.socket.Accept();
+                socket = this.socket.Accept();
                 Console.WriteLine(socket.RemoteEndPoint.ToString());
                 socket.Send(System.Text.Encoding.ASCII.GetBytes(message));
                 string he = socket.RemoteEndPoint.ToString();
 
                 Dialog(he);
-              
             }
             catch (SocketException ex)
             {
@@ -92,7 +91,7 @@ namespace ClientServer
                 socket.Connect(endPoint);
                 if (socket.Connected)
                 {
-                    string he = "SERVER";
+                   string he = "SERVER";
 
                     Dialog(he);
 
@@ -106,12 +105,14 @@ namespace ClientServer
             }
 
         }
-
-        private void Dialog(string he)
+        public void Dialog(string he)
         {
+
+            string stop = "Bye";
             int i;
             string text;
             string message;
+           // ConsoleKey key;
             do
             {
                 i = socket.Receive(buffer);
@@ -130,7 +131,17 @@ namespace ClientServer
                 Console.WriteLine($"\t{message}");
                 Console.ResetColor();
 
-            } while (i > 0);
+
+                
+
+                if (message.Contains(stop) || text.Contains(stop))
+                {
+                    break;
+                }
+
+            } while (i > 0 );
+           // Console.ReadKey().Key != ConsoleKey.Escape
+        //} while (i > 0 || Console.ReadKey(true).Key != ConsoleKey.Escape);
         }
     }
 }
